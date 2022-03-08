@@ -1,6 +1,16 @@
 # learn_webpack
 learn and test webpack
 
+### 初始化项目
+
+```bash
+npm init 
+// 初始化项目
+npm install --save-dev webpack webpac-cli
+// 安装webpack webpack-cli 依赖包
+
+```
+
 不设置配置文件
 
 ```bash
@@ -109,7 +119,7 @@ module.exports = {
     vendor: './src/vendor/index.js'
   },
   output: {
-    filename: [name][hash:5].js,
+    filename: '[name][hash:5].js',
     path: path.resolve(__dirname,'dist')
   }
 }
@@ -219,13 +229,71 @@ module: {
 }
 ```
 
+这样设置plugins会有点不清晰，建议使用下面这种方式
 
+在webpack.config.js中
 
+```js
+const path = require('path');
 
+module.exports = {
+  mode: 'production',
+  entry: './src/index.js',
+  output: {
+    filename: 'index.js',
+    path: path.resolve(__dirname,'dist'),
+  },
+  module:{
+    rules:[
+    	{
+        test: /\.css$/i,
+        use:['style-loader','css-loader','postcss-loader'],
+      },  
+    ],
+    generator: {
+      asset: {
+        filename:'assets/[name][hash:5][ext]',
+        outputpath:'cdn-assets'
+      },
+    },
+  },
+}
+```
 
+在postcss.config.js
 
+```js
+module.exports = {
+  plugin:[
+				[
+          'autoprefixer',
+        ],
+  ],
+}
+```
 
+#### 解析
 
+全局资源使用alias
+
+```js
+// webpack.config.js
+const path = require('path');
+
+module.exports = {
+  resolve: {
+    alias: {
+      Components: path.resolve(__dirname,'src/components'),
+      Template$: path.resolve(__dirname,'src/template')
+    },
+  },
+}
+
+// 别的文件中  使用别名
+import Components from 'Components/component'
+
+// 在给定的对象键后添加$，表示jing qu
+```
 
 
 
