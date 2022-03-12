@@ -27,9 +27,9 @@ npx webpack流程
 npx webpack --config myConfig.js
 ```
 
---save-dev   - D 代表安装到开发环境
+--save-dev   - D 代表安装到开发环境 安装到devDependencies
 
---save 生产环境
+--save 生产环境 安装到dependencies
 
 ### 开始配置 
 
@@ -120,14 +120,75 @@ module.exports = {
   },
   output: {
     filename: '[name][hash:5].js',
-    path: path.resolve(__dirname,'dist')
+    path: path.resolve(__dirname,'dist'),
+    publicPath: 'https//cdn.com',
+    clean:true
   }
 }
-
+// clean 清理以前打包之前的旧文件
+// publicPath 自动添加到输出文件名的前面
 // ./dist/app.js ./dist/vendor.js
 ```
 
 有多个文件输出时，输出文件的名称用[name]占位符来替代
+
+#### source map
+
+打包后的代码与源码映射
+
+```bash
+devtool: 'eval-cheap-source-map'
+```
+
+#### devServer
+
+提供一个web server 且具有实时加载功能
+
+```js
+devServer: {
+  static: './dist'
+}
+
+// 将dist目录的文件server到localhost：8080下
+```
+
+#### denpendOn
+
+```js
+entry： {
+  index: {
+    import: './src/index.js',
+  	dependOn: 'shared'
+  },
+    test: {
+      import: './src/test.js',
+      dependOn: 'shared'
+    },
+      shared:'lodash',
+}
+
+// 在多个chunk之间共享模块
+```
+
+#### splitChunksPlugin
+
+将公共的依赖模块提取到一个入口或者提取一个新的生成chunk
+
+```js
+optimization: {
+  splitChunksPlugin: {
+    // cacheGroups 将第三方库存到缓存中，减少请求的次数
+    cacheGroups: {
+      test: /REX/,
+      name: 'vendor',
+      chunks: 'all',
+    }
+
+  }
+}
+```
+
+
 
 #### Module模块
 
@@ -312,3 +373,18 @@ import Components from 'Components/component'
 i忽略大小写
 
 \ 转义符 
+
+### pulgin
+
+#### HtmlWebpackPlugin
+
+在打包文件夹中自动生成一个html文件，在body中使用script标签引入webpack生成的bundle
+
+```js
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('')
+
+```
+
+### 热更新
+
